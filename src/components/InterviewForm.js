@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import PropTypes from "prop-types";
+// import PropTypes from "prop-types";
 
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import { faGlobe, faPhone, faClock, faAt, faLink } from '@fortawesome/fontawesome-free-solid';
@@ -198,14 +198,19 @@ class InterviewForm extends Component {
         };
 
         let jobs = localStorage.getItem('jobs');
-        if (jobs) {
+        if (jobs && this.state.editMode) {
             jobs = JSON.parse(jobs);
+            payload.companyId = this.state.companyId;
             jobs[this.state.companyId] = payload;
         }
         else {
-            jobs = {
-                [new Date().getTime()]: payload
+            jobs = JSON.parse(jobs);
+            if (!jobs || Object.keys(jobs).length === 0) {
+                jobs = {};
             }
+            const companyId = new Date().getTime();
+            payload.companyId = companyId;
+            jobs[companyId] = payload;
         }
         localStorage.setItem('jobs', JSON.stringify(jobs));
     }
