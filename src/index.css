@@ -1,0 +1,52 @@
+body {
+  background: #fff;
+  /* background: linear-gradient(to right,#FFF,#ECE9E6); */
+}
+
+.navbar {
+  border-bottom: 1px solid rgba(204, 204, 204, .45);
+}
+
+a.navbar-item:hover {
+  /* background-color: #f5f5f5; */
+  color: #0a0a0a;
+}
+
+.tag.is-delete:hover {
+  cursor: pointer;
+}
+
+.rounded_number {
+  border: 3px solid #437ddf;
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.tag.has-shadow {
+  box-shadow: 1px 1px 3px 0px #00000070;
+}
+
+.title-row .icon {
+  display: none;
+  height: 10px;
+    width: 10px;
+    font-size: initial;
+    color: #b9b9b9;
+    margin-left: 12px;
+}
+.title-row:hover .icon {
+  display: inline-flex;
+}
+
+.rounded_number {
+  width: 60px;
+  text-align: center;
+}
+
+.menu-hoverable-item {
+  display: flex;
+  align-items: center;
+}
+.menu-hoverable-item span:first-child{
+  margin-right: 8px;
+}
