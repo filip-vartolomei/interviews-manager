@@ -34,7 +34,7 @@ class InterviewForm extends Component {
             jobSkills: [],
 
             selectedCurrency: typeCurrencyList[0],
-            selectedContract: '',
+            selectedContract: typeContractList[0],
             selectedCountry: '',
             selectedStatus: [],
             selectedLanguage: [],
@@ -69,38 +69,42 @@ class InterviewForm extends Component {
 
     componentDidMount() {
         const routerParams = this.props.match.params;
-        if (Object.keys(routerParams) > 0) {
+        if (Object.keys(routerParams).length > 0) {
             // We are in EDIT mode
             // We must retreave data from the Company from the localstorage
             let jobs = localStorage.getItem('jobs');
             if (jobs) {
                 jobs = JSON.parse(jobs);
                 const currentJob = jobs[routerParams.id];
-                this.setState({
-                    companyName: currentJob.companyName,
 
-                    contactEmail: currentJob.contactEmail,
-                    contactPhone: currentJob.contactPhone,
-                    contactSkype: currentJob.contactSkype,
-
-                    websiteCompany: currentJob.websiteCompany,
-                    websiteJob: currentJob.websiteJob,
-
-                    jobDescription: currentJob.jobDescription,
-                    jobPosition: currentJob.jobPosition,
-                    jobSalary: currentJob.jobSalary,
-                    jobSkills: currentJob.jobSkills,
-
-                    selectedCurrency: currentJob.selectedCurrency,
-                    selectedContract: currentJob.selectedContract,
-                    selectedCountry: currentJob.selectedCountry,
-                    selectedStatus: currentJob.selectedStatus,
-                    selectedLanguage: currentJob.selectedLanguage,
-
-                    editMode: true
-                }, () => {
-                    console.log('STATE_LOCAL: ', this.state);
-                });
+                if(currentJob) {
+                    this.setState({
+                        companyName: currentJob.companyName,
+                        
+                        contactEmail: currentJob.contactEmail,
+                        contactPhone: currentJob.contactPhone,
+                        contactSkype: currentJob.contactSkype,
+                        
+                        websiteCompany: currentJob.websiteCompany,
+                        websiteJob: currentJob.websiteJob,
+                        
+                        jobDescription: currentJob.jobDescription,
+                        jobPosition: currentJob.jobPosition,
+                        jobSalary: currentJob.jobSalary,
+                        jobSkills: currentJob.jobSkills,
+                        
+                        selectedCurrency: currentJob.selectedCurrency,
+                        selectedContract: currentJob.selectedContract,
+                        selectedCountry: currentJob.selectedCountry,
+                        selectedStatus: currentJob.selectedStatus,
+                        selectedLanguage: currentJob.selectedLanguage,
+                        
+                        editMode: true,
+                        companyId: routerParams.id
+                    }, () => {
+                        console.log('STATE_LOCAL: ', this.state);
+                    });
+                }
             }
         }
     }
@@ -122,7 +126,6 @@ class InterviewForm extends Component {
         });
     }
 
-
     handleLanguageSelection(e) {
         const newSelection = e.target.value;
         let newSelectionArray;
@@ -133,23 +136,18 @@ class InterviewForm extends Component {
         }
         this.setState({ selectedLanguage: newSelectionArray }, () => console.log('languaage selection: ', this.state.selectedLanguage));
     }
-
     handleStatusSelection(e) {
         this.setState({ selectedStatus: [e.target.value] }, () => console.log('status: ', this.state.selectedStatus));
     }
-
     handleCountrySelection(e) {
         this.setState({ selectedCountry: e.target.value }, () => console.log('Country: ', this.state.selectedCountry));
     }
-
     handleContractSelection(e) {
         this.setState({ selectedContract: e.target.value }, () => console.log('Contract: ', this.state.selectedContract));
     }
-
     handleCurrencySelection(e) {
         this.setState({ selectedCurrency: e.target.value }, () => console.log('Currency: ', this.state.selectedCurrency));
     }
-
     handleCompanyNameChange(e) {
         this.setState({ companyName: e.target.value }, () => console.log('companyName: ', this.state.companyName))
     }
@@ -180,10 +178,40 @@ class InterviewForm extends Component {
 
     onFormSubmit(e) {
         e.preventDefault();
+
+        const payload = {
+            companyName: this.state.companyName,
+            contactEmail: this.state.contactEmail,
+            contactPhone: this.state.contactPhone,
+            contactSkype: this.state.contactSkype,
+            websiteCompany: this.state.websiteCompany,
+            websiteJob: this.state.websiteJob,
+            jobDescription: this.state.jobDescription,
+            jobPosition: this.state.jobPosition,
+            jobSalary: this.state.jobSalary,
+            jobSkills: this.state.jobSkills,
+            selectedCurrency: this.state.selectedCurrency,
+            selectedContract: this.state.selectedContract,
+            selectedCountry: this.state.selectedCountry,
+            selectedStatus: this.state.selectedStatus,
+            selectedLanguage: this.state.selectedLanguage,
+        };
+
+        let jobs = localStorage.getItem('jobs');
+        if (jobs) {
+            jobs = JSON.parse(jobs);
+            jobs[this.state.companyId] = payload;
+        }
+        else {
+            jobs = {
+                [new Date().getTime()]: payload
+            }
+        }
+        localStorage.setItem('jobs', JSON.stringify(jobs));
     }
 
     render() {
-        const title = this.props.isEdit ? `Edit ${this.props.title}` : 'Add new company';
+        const title = this.state.editMode ? `Edit ${this.state.companyName}` : 'Add new company';
         return (
             <div className="interview-form">
                 <Hero title={title} subtitle={this.subtitle} />
@@ -193,7 +221,6 @@ class InterviewForm extends Component {
                             <div className="column"></div>
                             <div className="column is-10">
                                 <div className="box">
-
 
                                     <form onSubmit={this.onFormSubmit}>
 
@@ -308,6 +335,7 @@ class InterviewForm extends Component {
                                                     </p>
                                                 </div>
                                             </div>
+
                                             <div className="column">
                                                 <div className="field">
                                                     <label className="label">Contact Skype</label>
@@ -375,6 +403,7 @@ class InterviewForm extends Component {
                                                             placeholder={'Curr.'}
                                                         />
                                                     </p>
+
                                                     <p className="control">
                                                         <SingleInput
                                                             inputType={'text'}
@@ -407,7 +436,6 @@ class InterviewForm extends Component {
                                                 <div className="field">
                                                     <label className="label">Job description</label>
                                                     <p className="control">
-
                                                         <TextArea
                                                             title={''}
                                                             rows={5}
@@ -470,14 +498,5 @@ class InterviewForm extends Component {
         );
     }
 }
-
-InterviewForm.propTypes = {
-    isEdit: PropTypes.bool.isRequired
-};
-
-InterviewForm.defaultProps = {
-    isEdit: false,
-}
-
 
 export default InterviewForm;
