@@ -1,4 +1,4 @@
-## React Rating Component
+## React Interviews Manager
 
 
 This project is a playground when I was learning **React**.
