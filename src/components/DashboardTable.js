@@ -9,6 +9,8 @@ import Tag from './Tag';
 import DropDownContact from './DropDownContact';
 import InfoLabelJob from './InfoLabelJob';
 
+import { statusBarSize } from '../utils';
+
 class DashboardTable extends Component {
     constructor(props) {
         super(props);
@@ -25,8 +27,19 @@ class DashboardTable extends Component {
         }
     }
 
+    renderStatusBar(selectedStatus) {
+        const barSize = statusBarSize(selectedStatus);
+        return (
+            <p className="title is-6 tooltip is-tooltip-bottom" data-tooltip={selectedStatus}>
+                <progress className={`progress ${barSize.className}`} value={barSize.value} max="100"></progress>
+            </p>
+        );
+    }
+
     render() {
         const job = this.state.jobs;
+
+
         return (
             <div>
                 {Object.keys(this.state.jobs).map((k, index) => {
@@ -44,7 +57,7 @@ class DashboardTable extends Component {
                                         </div>
 
                                         <strong className="inline-flex title is-4 title-component">
-                                            <Link to={`new/${job[k].companyId}`}>{job[k].companyName}</Link>
+                                            <Link to={`edit/${job[k].companyId}`}>{job[k].companyName}</Link>
 
                                             <span className="icon">
                                                 <FontAwesomeIcon icon={faEdit} />
@@ -86,9 +99,7 @@ class DashboardTable extends Component {
                                     </div>
                                     <div className="column">
                                         <p className="heading">Status Interview</p>
-                                        <p className="title is-6 tooltip is-tooltip-bottom" data-tooltip={job[k].selectedStatus}>
-                                            <progress className="progress" value="1" max="100"></progress>
-                                        </p>
+                                        {this.renderStatusBar(job[k].selectedStatus)}
                                     </div>
                                 </div>
                                 <nav className="level is-mobile">

@@ -18,7 +18,7 @@ const Routes = () => (
 
             <Switch>
                 <Route path="/" exact component={Dashboard} />
-                <Route path="/new/:id" component={InterviewForm} />
+                <Route path="/edit/:id" component={InterviewForm} />
                 <Route path="/new" component={InterviewForm} />
                 <Route path="/profile" component={Profile} />
                 <Route path="/settings" component={Settings} />

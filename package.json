@@ -1,7 +1,8 @@
 {
-  "name": "interview-process",
+  "name": "myinterviews-manager",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://filip-vartolomei.github.io/myinterviews-manager/",
   "dependencies": {
     "@fortawesome/fontawesome": "^1.1.4",
     "@fortawesome/fontawesome-free-brands": "^5.0.8",
@@ -12,6 +13,7 @@
     "bulma-checkradio": "^1.0.1",
     "bulma-tooltip": "^1.0.3",
     "classnames": "^2.2.5",
+    "gh-pages": "^1.1.0",
     "prop-types": "^15.6.1",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
@@ -21,6 +23,8 @@
     "react-table": "^6.8.0"
   },
   "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",

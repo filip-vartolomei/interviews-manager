@@ -12,35 +12,38 @@ import Select from './Select';
 import SingleInput from './SingleInput';
 import TextArea from './TextArea';
 
-import { countryList, languageList, interviewStatusList, typeContractList, typeCurrencyList } from '../utils';
+import {
+    countryList, languageList,
+    interviewStatusList, typeContractList,
+    typeCurrencyList, statusBarSize
+} from '../utils';
 
+const defaultState = {
+    companyName: '',
+
+    contactEmail: '',
+    contactPhone: '',
+    contactSkype: '',
+
+    websiteCompany: '',
+    websiteJob: '',
+
+    jobDescription: '',
+    jobPosition: '',
+    jobSalary: '',
+    jobSkills: [],
+
+    selectedCurrency: typeCurrencyList[0],
+    selectedContract: typeContractList[0],
+    selectedCountry: '',
+    selectedStatus: [interviewStatusList[0]],
+    selectedLanguage: [],
+
+    editMode: false
+};
 class InterviewForm extends Component {
     constructor(props) {
         super(props);
-
-        const defaultState = {
-            companyName: '',
-
-            contactEmail: '',
-            contactPhone: '',
-            contactSkype: '',
-
-            websiteCompany: '',
-            websiteJob: '',
-
-            jobDescription: '',
-            jobPosition: '',
-            jobSalary: '',
-            jobSkills: [],
-
-            selectedCurrency: typeCurrencyList[0],
-            selectedContract: typeContractList[0],
-            selectedCountry: '',
-            selectedStatus: [],
-            selectedLanguage: [],
-
-            editMode: false
-        };
 
         this.state = defaultState;
         this.subtitle = 'In this page you can add or edit a company.';
@@ -64,7 +67,10 @@ class InterviewForm extends Component {
         this.handleJobPositionChange = this.handleJobPositionChange.bind(this);
         this.handleJobSalaryChange = this.handleJobSalaryChange.bind(this);
 
+
         this.onFormSubmit = this.onFormSubmit.bind(this);
+
+        this.handleInitialSetup = this.handleInitialSetup.bind(this);
     }
 
     componentDidMount() {
@@ -72,39 +78,45 @@ class InterviewForm extends Component {
         if (Object.keys(routerParams).length > 0) {
             // We are in EDIT mode
             // We must retreave data from the Company from the localstorage
-            let jobs = localStorage.getItem('jobs');
-            if (jobs) {
-                jobs = JSON.parse(jobs);
-                const currentJob = jobs[routerParams.id];
+            this.handleInitialSetup();
+        }
+    }
 
-                if(currentJob) {
-                    this.setState({
-                        companyName: currentJob.companyName,
-                        
-                        contactEmail: currentJob.contactEmail,
-                        contactPhone: currentJob.contactPhone,
-                        contactSkype: currentJob.contactSkype,
-                        
-                        websiteCompany: currentJob.websiteCompany,
-                        websiteJob: currentJob.websiteJob,
-                        
-                        jobDescription: currentJob.jobDescription,
-                        jobPosition: currentJob.jobPosition,
-                        jobSalary: currentJob.jobSalary,
-                        jobSkills: currentJob.jobSkills,
-                        
-                        selectedCurrency: currentJob.selectedCurrency,
-                        selectedContract: currentJob.selectedContract,
-                        selectedCountry: currentJob.selectedCountry,
-                        selectedStatus: currentJob.selectedStatus,
-                        selectedLanguage: currentJob.selectedLanguage,
-                        
-                        editMode: true,
-                        companyId: routerParams.id
-                    }, () => {
-                        console.log('STATE_LOCAL: ', this.state);
-                    });
-                }
+    handleInitialSetup() {
+        const routerParams = this.props.match.params;
+        console.log('routerParams', routerParams)
+        let jobs = localStorage.getItem('jobs');
+        if (jobs) {
+            jobs = JSON.parse(jobs);
+            const currentJob = jobs[routerParams.id];
+            console.log('found current job', currentJob)
+            if (currentJob) {
+                this.setState({
+                    companyName: currentJob.companyName,
+
+                    contactEmail: currentJob.contactEmail,
+                    contactPhone: currentJob.contactPhone,
+                    contactSkype: currentJob.contactSkype,
+
+                    websiteCompany: currentJob.websiteCompany,
+                    websiteJob: currentJob.websiteJob,
+
+                    jobDescription: currentJob.jobDescription,
+                    jobPosition: currentJob.jobPosition,
+                    jobSalary: currentJob.jobSalary,
+                    jobSkills: currentJob.jobSkills,
+
+                    selectedCurrency: currentJob.selectedCurrency,
+                    selectedContract: currentJob.selectedContract,
+                    selectedCountry: currentJob.selectedCountry,
+                    selectedStatus: currentJob.selectedStatus,
+                    selectedLanguage: currentJob.selectedLanguage,
+
+                    editMode: true,
+                    companyId: routerParams.id
+                }, () => {
+                    console.log('STATE_LOCAL: ', this.state);
+                });
             }
         }
     }
@@ -117,7 +129,6 @@ class InterviewForm extends Component {
             // this._updateLocalStorage();
         });
     }
-
     handleInsertTag(newSkill) {
         this.setState((prevState, props) => {
             return { jobSkills: [...prevState.jobSkills, newSkill] }
@@ -138,6 +149,7 @@ class InterviewForm extends Component {
     }
     handleStatusSelection(e) {
         this.setState({ selectedStatus: [e.target.value] }, () => console.log('status: ', this.state.selectedStatus));
+        // this.getStatusBireSize();
     }
     handleCountrySelection(e) {
         this.setState({ selectedCountry: e.target.value }, () => console.log('Country: ', this.state.selectedCountry));
@@ -213,27 +225,58 @@ class InterviewForm extends Component {
             jobs[companyId] = payload;
         }
         localStorage.setItem('jobs', JSON.stringify(jobs));
+
+        this.goToRootPage();
+    }
+
+    goToRootPage() {
+        this.props.history.push('/');
+    }
+
+    handleClearForm(e) {
+        if (e) {
+            e.preventDefault();
+        }
+        this.setState({} = { ...defaultState });
+    }
+
+    componentWillReceiveProps(nextProps) {
+        console.log(nextProps);
+
+        const routerParams = nextProps.match.params;
+        if (Object.keys(routerParams).length > 0) {
+            // retreave data from localstorage and set to state
+            console.log('full the form')
+            this.handleInitialSetup();
+        } else {
+            // set the state as Default, like a NEW add company
+            this.handleClearForm();
+        }
     }
 
     render() {
         const title = this.state.editMode ? `Edit ${this.state.companyName}` : 'Add new company';
+        const barSize = statusBarSize(this.state.selectedStatus);
+
         return (
             <div className="interview-form">
                 <Hero title={title} subtitle={this.subtitle} />
+
                 <section className="section">
                     <div className="container">
                         <div className="columns">
                             <div className="column"></div>
                             <div className="column is-10">
-                                <div className="box">
 
+
+                                <div className="box">
                                     <form onSubmit={this.onFormSubmit}>
 
                                         <div className="columns">
 
                                             <div className="column">
                                                 <div className="field">
-                                                    <label className="label">What's the company name?</label>
+                                                    <label className="label">Company name</label>
                                                     <p className="control">
                                                         <SingleInput
                                                             inputType={'text'}
@@ -248,7 +291,7 @@ class InterviewForm extends Component {
 
                                             <div className="column">
                                                 <div className="field">
-                                                    <label className="label">What's the country?</label>
+                                                    <label className="label">Company country/city</label>
                                                     <p className="control has-icons-left">
                                                         <Select
                                                             name={'country-select'}
@@ -267,26 +310,10 @@ class InterviewForm extends Component {
                                         </div>
 
                                         <div className="columns">
+
                                             <div className="column">
                                                 <div className="field">
-                                                    <label className="label">Contact email</label>
-                                                    <p className="control has-icons-left">
-                                                        <SingleInput
-                                                            inputType={'text'}
-                                                            title={''}
-                                                            name={'contactEmail'}
-                                                            controlFunc={this.handleContactEmailChange}
-                                                            content={this.state.contactEmail}
-                                                            placeholder={'e.g. company-name@gmail.com'} />
-                                                        <span className="icon is-small is-left">
-                                                            <FontAwesomeIcon icon={faAt} />
-                                                        </span>
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <div className="column">
-                                                <div className="field">
-                                                    <label className="label">Website</label>
+                                                    <label className="label">Company website</label>
                                                     <p className="control has-icons-left">
                                                         <SingleInput
                                                             inputType={'text'}
@@ -304,7 +331,7 @@ class InterviewForm extends Component {
 
                                             <div className="column">
                                                 <div className="field">
-                                                    <label className="label">Job url</label>
+                                                    <label className="label">Job website post</label>
                                                     <p className="control has-icons-left">
                                                         <SingleInput
                                                             inputType={'text'}
@@ -323,9 +350,28 @@ class InterviewForm extends Component {
                                         </div>
 
                                         <div className="columns">
+
                                             <div className="column">
                                                 <div className="field">
-                                                    <label className="label">Contact Phone</label>
+                                                    <label className="label">Contact email</label>
+                                                    <p className="control has-icons-left">
+                                                        <SingleInput
+                                                            inputType={'text'}
+                                                            title={''}
+                                                            name={'contactEmail'}
+                                                            controlFunc={this.handleContactEmailChange}
+                                                            content={this.state.contactEmail}
+                                                            placeholder={'e.g. company-name@gmail.com'} />
+                                                        <span className="icon is-small is-left">
+                                                            <FontAwesomeIcon icon={faAt} />
+                                                        </span>
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <div className="column">
+                                                <div className="field">
+                                                    <label className="label">Contact phone</label>
                                                     <p className="control has-icons-left">
                                                         <SingleInput
                                                             inputType={'text'}
@@ -343,7 +389,7 @@ class InterviewForm extends Component {
 
                                             <div className="column">
                                                 <div className="field">
-                                                    <label className="label">Contact Skype</label>
+                                                    <label className="label">Contact skype</label>
                                                     <p className="control has-icons-left">
                                                         <SingleInput
                                                             inputType={'text'}
@@ -378,6 +424,7 @@ class InterviewForm extends Component {
                                         </div>
 
                                         <div className="columns">
+
                                             <div className="column">
                                                 <div className="field">
                                                     <label className="label">Contract type</label>
@@ -422,7 +469,7 @@ class InterviewForm extends Component {
                                             </div>
                                         </div>
 
-                                        <label className="label">Required Job Skills</label>
+                                        <label className="label">Required job skills</label>
                                         <div className="columns">
                                             <div className="column">
                                                 <div className="field is-grouped is-grouped-multiline">
@@ -431,7 +478,6 @@ class InterviewForm extends Component {
                                                         handleInsertTag={this.handleInsertTag}
                                                         handleDeleteTag={this.handleDeleteTag}
                                                     />
-                                                    <p>Colorare quelli che appartengono alle mie Skill</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -467,6 +513,10 @@ class InterviewForm extends Component {
                                             </div>
                                         </div>
 
+                                        <p className="title is-6 tooltip is-tooltip-top" data-tooltip={this.state.selectedStatus}>
+                                            <progress className={`progress ${barSize.className}`} value={barSize.value} max="100"></progress>
+                                        </p>
+
                                         <div className="columns">
                                             <div className="column">
                                                 <CheckboxOrRadioGroup
@@ -485,7 +535,7 @@ class InterviewForm extends Component {
                                                 <p className="control">
                                                     <button type="submit"
                                                         className="button is-primary is-fullwidth is-large">
-                                                        <strong>Add new</strong>
+                                                        <strong>{this.state.editMode ? 'Save changes' : 'Add new company'}</strong>
                                                     </button>
                                                 </p>
                                             </div>

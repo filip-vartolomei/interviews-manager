@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import classNames from 'classnames';
 
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { faBlackTie } from '@fortawesome/fontawesome-free-brands';
 class Header extends Component {
     constructor(props) {
         super(props);
-        this.state = { 
+        this.state = {
             isActive: false
         };
     }
@@ -32,6 +34,9 @@ class Header extends Component {
                 <div className="container">
                     <div className="navbar-brand">
                         <Link to="/" onClick={this.onCloseNavbar} className="navbar-item">
+                            <span className="icon is-large">
+                                <FontAwesomeIcon icon={faBlackTie} size="2x" />
+                            </span>
                             <strong>MyInterviews</strong>
                         </Link>
                         <button data-target="navMenu" onClick={this.handleNavbarActivation} className="button navbar-burger">
@@ -47,6 +52,12 @@ class Header extends Component {
                             </Link>
                             <Link to="/settings" onClick={this.onCloseNavbar} className="navbar-item">
                                 <span>Settings</span>
+                            </Link>
+                            <Link to="/interview-preparation" onClick={this.onCloseNavbar} className="navbar-item">
+                                <span>Interview Gym</span>
+                            </Link>
+                            <Link to="/faq" onClick={this.onCloseNavbar} className="navbar-item">
+                                <span>F.A.Q.</span>
                             </Link>
                         </div>
                         <div className="navbar-end">
