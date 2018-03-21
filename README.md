@@ -7,7 +7,7 @@ This project is a managment in one place of your current interviews, so that you
 
 This app is still in development, and when it will be quite ready, will publish a link to the demo.
 
-![interviews-manager](https://github.com/filip-vartolomei/interview-manager/blob/master/interview-manager-preview.png)
+![interviews-manager](https://github.com/filip-vartolomei/interviews-manager/blob/master/interview-manager-preview.png)
 
 
 If you want to try this app on your local machine,
